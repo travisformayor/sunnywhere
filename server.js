@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const axios = require('axios');
+const cities = require('./cities.json')
  
 // Setup server port or the localhost dev port
 const PORT = process.env.PORT || 4000;
@@ -36,43 +37,67 @@ app.get('/cities', (req, res) => {
 });
 
 app.get('/update', (req, res) => {
-  // get a single city's info
-  axios.get('https://www.metaweather.com/api/location/2487956/')
-  .then(function (response) {
-    // handle response
-    // console.log('Axios: ', response);
-    // fill in the returned name and id
-    if (response) {
-      const { data } = response;
-      // console.log('response: ', response)
-      let city = {
-        name: data.title,
-        woeid: data.woeid,
-        entryDate: 'Unknown',
-        type: ' Unknown',
-        typeShorthand: 'Unknown',
+  // loop through each city one at a time and update
+  // delay between each to be kind to the MetaWeather api
+  let index = 0;
+  loopCityUpdate(cities, index)
+  
+  function loopCityUpdate(cities, index) {
+    // Wait on each loop before trying for the next one
+    setTimeout(() => {
+      updateCity(cities[index].woeid)
+      index++
+      if (cities.length > index) {
+        // still more cities, call again
+        loopCityUpdate(cities, index)
+      } else {
+        res.json({status: 'update complete'})
       }
-      // if weather info, fill that in as well
-      if (data.consolidated_weather.length > 0) {
-        city = {
-          ...city,
-          entryDate: data.consolidated_weather[0].applicable_date,
-          type: data.consolidated_weather[0].weather_state_name,
-          typeShorthand: data.consolidated_weather[0].weather_state_abbr,
+    }, 1000)
+  }
+
+  function updateCity(cityId) {
+    // get a single city's info
+    axios.get(`https://www.metaweather.com/api/location/${cityId}/`)
+    .then(function (response) {
+      // handle response
+      // fill in the returned name and id
+      if (response) {
+        console.log('response for city ', cityId);
+        const { data } = response;
+        let city = {
+          name: data.title,
+          woeid: data.woeid,
+          entryDate: 'Unknown',
+          type: ' Unknown',
+          typeShorthand: 'Unknown',
         }
+        // if weather info, fill that in as well
+        if (data.consolidated_weather.length > 0) {
+          city = {
+            ...city,
+            entryDate: data.consolidated_weather[0].applicable_date,
+            type: data.consolidated_weather[0].weather_state_name,
+            typeShorthand: data.consolidated_weather[0].weather_state_abbr,
+          }
+        }
+        // add to db, updating or creating new
+        db.City.findOneAndUpdate({woeid: city.woeid}, city, {upsert: true})
+          .catch(err => {
+            console.log(
+              {error: err})
+          })
+          .then(() => {
+            // console.log({db: 'saved', response: city})
+          })
       }
-      // add to db
-      db.City.findOneAndUpdate({woeid: city.woeid}, city, {upsert:true})
-        .catch(err => res.json({error: err}))
-        .then(() => res.json({db: 'saved', response: city}))
-      // return res.json({result: city})
-    }
-  })
-  .catch(function (error) {
-    // handle error
-    console.log('Update Endpoint Error: ', error)
-    return res.json({error})
-  });
+    })
+    .catch(function (error) {
+      // handle error
+      console.log('Update Endpoint Error: ', error)
+      return res.json({error})
+    });
+  }
 })
 
 // Server ============================= //
