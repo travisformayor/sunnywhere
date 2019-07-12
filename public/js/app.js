@@ -50,7 +50,7 @@ function getCity(city) {
   const request = {
       method: 'GET',
       url: urlSend,
-      dataType: 'jsonp',
+      dataType: 'json',
       success: handleSuccess,
       error: handleError,
   }
