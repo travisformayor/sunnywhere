@@ -7,10 +7,35 @@ console.log('####################');
 
 // // Add all cities to the list
 // console.log(CITIES[0]);
-const getCity = (city) => {
-  const API_URL = 'https://www.metaweather.com/api/location/search/?query=';
-  const urlSend = `${API_URL}${city}`
-  console.log(urlSend);
+function appendCity(city, result, resultDate) {
+  let cityHTML = `
+    <tr>
+      <td data-label="City">${city.name}</td>
+      <td data-label="City ID">${city.cityId}</td>
+      <td data-label="Weather State" class="result">${result}</td>
+      <td data-label="Weather Date">${resultDate}</td>
+    </tr>
+  `;
+  // Update progress
+  $('#load-status').text(`Loading ${city.cityIndex+1}/${city.total}`)
+  // Add the city result
+  $('#city-list').append(cityHTML);
+  // sort the table
+  sortTable(2, 'text');
+}
+
+function getCity(city) {
+  // city: cities[cityIndex].city,
+  // cityId: cities[cityIndex].woeid,
+  // cityIndex: cityIndex,
+  // total: cities.length
+  // const API_URL = 'https://www.metaweather.com/api/location/search/?query=';
+  let result = 'Unknown';
+  let resultDate = 'Unknown';
+  const API_URL = 'https://www.metaweather.com/api/location/';
+  const urlSend = `${API_URL}${city.cityId}/`
+  // console.log(urlSend);
+
   const request = {
       method: 'GET',
       url: urlSend,
@@ -21,62 +46,72 @@ const getCity = (city) => {
   $.ajax(request);
   
   function handleError(error) {
-    console.log(`Error: ${error}`);
-    console.log(error);
-    let cityHTML = `
-      <tr>
-        <td data-label="Expected City">${city}</td>
-        <td data-label="Returned City">None</td>
-        <td data-label="ID">None</td>
-        <td data-label="Result">API Error</td>
-      </tr>
-    `;
-    $('#city-list').append(cityHTML);
+    console.log('Error: ', {error});
+    appendCity(city, result, resultDate);
   };
   function handleSuccess(response) {
-    console.log(response);
-    let title = 'Unknown';
-    let woeid = 'Unknown'
-    let result = 'No Result'
-    if (response.length > 0) {
-      title = response[0].title;
-      woeid = response[0].woeid;
-      result = 'Success'
+    // console.log(response);
+    if (!!response) {
+      city.name = response.title;
+      city.cityId = response.woeid;
+      if (response.consolidated_weather.length > 0) {
+        result = response.consolidated_weather[0].weather_state_name;
+        resultDate = response.consolidated_weather[0].applicable_date;
+      }
     }
-    let cityHTML = `
-      <tr>
-        <td data-label="Expected City">${city}</td>
-        <td data-label="Returned City">${title}</td>
-        <td data-label="ID">${woeid}</td>
-        <td data-label="Result">${result}</td>
-      </tr>
-    `;
-    $('#city-list').append(cityHTML);
+    appendCity(city, result, resultDate);
   };
 }
 
-// getCity('tokyo')
-const cityTest = [
-  'test1',
-  'tokyo',
-  'miami',
-  'san francisco',
-  'tokyo',
-  'san francisco',
-]
+let cityIndex = 0;
 
-let cityLoop = 0;
-
-const getCities = (cities) => {
-  console.log(cityLoop)
+function getCities(cities) {
+  // console.log(cityIndex)
   setTimeout(() => {
-    getCity(cities[cityLoop].city)
-    cityLoop++
-    if (cityLoop < cities.length) {
+    const city = {
+      name: cities[cityIndex].city,
+      cityId: cities[cityIndex].woeid,
+      cityIndex: cityIndex,
+      total: cities.length
+    }
+    getCity(city)
+    cityIndex++
+    if (cityIndex < cities.length) {
       getCities(cities);
     }
-  }, 500)
+  }, 250) // be kind to the api endpoint
 }
 
-// getCities(cityTest);
 getCities(CITIES); // from cities.js
+
+// // Sort Table
+// https://stackoverflow.com/a/49956577
+function sortTable(column, type) {
+  //Sort the table
+  $('.table tbody tr').sort(function(a, b) {
+    // a and b are the 2 parameters being compared. 
+    // Since you are sorting rows, a and b are <tr>                                 
+
+    //Find the <td> using the column number and get the text value.
+    //Now, the a and b are the text of the <td>
+    a = $(a).find('td:eq(' + column + ')').text();
+    b = $(b).find('td:eq(' + column + ')').text();
+
+    switch (type) {
+      case 'text':
+        //Proper way to compare text in js is using localeCompare
+        //If order is ascending you can - a.localeCompare(b)
+        //If order is descending you can - b.localeCompare(a);
+        return a.localeCompare(b);
+        break;
+      case 'number':
+        //You can use deduct to compare if number.
+        //If order is ascending you can -> a - b. 
+        //Which means if a is bigger. It will return a positive number. b will be positioned first
+        //If b is bigger, it will return a negative number. a will be positioned first
+        return b - a;
+        break;
+    }
+  }).appendTo('.table tbody');
+}
+// sortTable(2, 'text');
