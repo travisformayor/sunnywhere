@@ -7,7 +7,6 @@ console.log('####################');
 
 // // Add all cities to the list
 // console.log(CITIES[0]);
-
 const getCity = (city) => {
   const API_URL = 'https://www.metaweather.com/api/location/search/?query=';
   const urlSend = `${API_URL}${city}`
@@ -15,9 +14,7 @@ const getCity = (city) => {
   const request = {
       method: 'GET',
       url: urlSend,
-      // dataType: 'json',
-      // crossDomain : true,
-      // headers: {  'Access-Control-Allow-Origin': '*' },
+      dataType: 'json',
       success: handleSuccess,
       error: handleError,
   }
@@ -28,8 +25,9 @@ const getCity = (city) => {
     console.log(error);
     let cityHTML = `
       <tr>
-        <td data-label="City">${city}</td>
-        <td data-label="ID">Unknown</td>
+        <td data-label="Expected City">${city}</td>
+        <td data-label="Returned City">None</td>
+        <td data-label="ID">None</td>
         <td data-label="Result">API Error</td>
       </tr>
     `;
@@ -37,7 +35,7 @@ const getCity = (city) => {
   };
   function handleSuccess(response) {
     console.log(response);
-    let title = city;
+    let title = 'Unknown';
     let woeid = 'Unknown'
     let result = 'No Result'
     if (response.length > 0) {
@@ -47,7 +45,8 @@ const getCity = (city) => {
     }
     let cityHTML = `
       <tr>
-        <td data-label="City">${title}</td>
+        <td data-label="Expected City">${city}</td>
+        <td data-label="Returned City">${title}</td>
         <td data-label="ID">${woeid}</td>
         <td data-label="Result">${result}</td>
       </tr>
@@ -69,16 +68,15 @@ const cityTest = [
 let cityLoop = 0;
 
 const getCities = (cities) => {
-  console.log('before:', cityLoop)
-
-  setTimeout(async () => {
-    await getCity(cities[cityLoop])
+  console.log(cityLoop)
+  setTimeout(() => {
+    getCity(cities[cityLoop].city)
     cityLoop++
-    console.log('after:', cityLoop)
     if (cityLoop < cities.length) {
-      getCities(cityTest);
+      getCities(cities);
     }
-  }, 1000)
+  }, 500)
 }
 
-getCities(cityTest);
+// getCities(cityTest);
+getCities(CITIES); // from cities.js
