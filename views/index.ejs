@@ -18,7 +18,7 @@
 </head>
 <body>
   <main>
-    <p id="load-status" class="load-status">Loading ...</p>
+    <p><%#= cities %></p>
     <table class="ui celled table">
       <thead>
         <tr>
@@ -31,6 +31,28 @@
       </thead>
       <tbody id="city-list">
         <!-- js inserts city results here -->
+        <% cities.sort((a, b) => b.type.localeCompare(a.type)).forEach(city => { %>
+          <% if (city.type === 'Clear') { %>
+            <tr class="positive">
+          <% } else { %>
+            <tr class="negative">
+          <% } %>
+            <td>
+              <% if (city.typeShorthand) { %>
+                <img 
+                  src="https://www.metaweather.com/static/img/weather/<%= city.typeShorthand %>.svg"
+                  class="ui mini centered image"
+                >
+              <% } %> 
+            </td>
+            <td data-label="City"><%= city.name %></td>
+            <td data-label="City ID"><%= city.woeid %></td>
+            <td data-label="Weather State" class="result"><%= city.type === 'Clear' ? 'Sunny' : city.type %></td>
+            <td data-label="Weather Date"><%= city.entryDate.toDateString() %></td>
+          </tr>
+        <% }) %>
+
+
       </tbody>
     </table>
   </main>

@@ -11,6 +11,9 @@ const PORT = process.env.PORT || 4000;
 // Database
 const db = require('./models');
 
+// View Engine
+app.set('view engine', 'ejs');
+
 // Middleware ========================= //
 // bodyparser middleware
 app.use(bodyParser.urlencoded({extended: true}));
@@ -24,24 +27,28 @@ app.use(express.static(__dirname + '/public'));
 // app.get('/', (req, res) => {
 //   res.send('<h1>Test</h1>')
 // });
-
 app.get('/', (req, res) => {
-  res.sendFile('/views/index.html', {root: __dirname});
+  db.City.find({})
+  .catch(err => res.json({error: err}))
+  .then(cities => {
+    // res.json({cities: cities})
+    res.render('index', {cities});
+  })
 });
 
-// City data
+// Index of all Cities in the DB
 app.get('/cities', (req, res) => {
   db.City.find({})
     .catch(err => res.json({error: err}))
     .then(cities => res.json({cities: cities}))
 });
 
+// Update endpoint which triggers staggered updates for all the cities
 app.get('/update', (req, res) => {
   // loop through each city one at a time and update
   // delay between each to be kind to the MetaWeather api
   let index = 0;
   loopCityUpdate(cities, index)
-  
   function loopCityUpdate(cities, index) {
     // Wait on each loop before trying for the next one
     setTimeout(() => {
@@ -55,7 +62,6 @@ app.get('/update', (req, res) => {
       }
     }, 1000)
   }
-
   function updateCity(cityId) {
     // get a single city's info
     axios.get(`https://www.metaweather.com/api/location/${cityId}/`)
