@@ -7,21 +7,31 @@ console.log('####################');
 
 // // Add all cities to the list
 // console.log(CITIES[0]);
-function appendCity(city, result, resultDate) {
+function appendCity(city, resultDate, result, resultShorthand) {
   let cityHTML = `
-    <tr>
+    <tr class="${result === 'Clear' ? 'positive' : 'negative'}">
+      <td>
+        ${resultShorthand ? 
+          `<img 
+            src="https://www.metaweather.com/static/img/weather/${resultShorthand}.svg" 
+            class="ui mini centered image">`
+          : '' }
+      </td>
       <td data-label="City">${city.name}</td>
       <td data-label="City ID">${city.cityId}</td>
-      <td data-label="Weather State" class="result">${result}</td>
+      <td data-label="Weather State" class="result">${result === 'Clear' ? 'Sunny' : result}</td>
       <td data-label="Weather Date">${resultDate}</td>
     </tr>
   `;
   // Update progress
   $('#load-status').text(`Loading ${city.cityIndex+1}/${city.total}`)
+  if (city.cityIndex >= city.total-2) {
+    $('#load-status').text('')
+  }
   // Add the city result
   $('#city-list').append(cityHTML);
   // sort the table
-  sortTable(2, 'text');
+  sortTable(3, 'text');
 }
 
 function getCity(city) {
@@ -30,8 +40,9 @@ function getCity(city) {
   // cityIndex: cityIndex,
   // total: cities.length
   // const API_URL = 'https://www.metaweather.com/api/location/search/?query=';
-  let result = 'Unknown';
   let resultDate = 'Unknown';
+  let result = 'Unknown';
+  let resultShorthand;
   const API_URL = 'https://www.metaweather.com/api/location/';
   const urlSend = `${API_URL}${city.cityId}/`
   // console.log(urlSend);
@@ -47,19 +58,20 @@ function getCity(city) {
   
   function handleError(error) {
     console.log('Error: ', {error});
-    appendCity(city, result, resultDate);
+    appendCity(city, resultDate, result, resultShorthand);
   };
   function handleSuccess(response) {
     // console.log(response);
-    if (!!response) {
+    if (response) {
       city.name = response.title;
       city.cityId = response.woeid;
       if (response.consolidated_weather.length > 0) {
-        result = response.consolidated_weather[0].weather_state_name;
         resultDate = response.consolidated_weather[0].applicable_date;
+        result = response.consolidated_weather[0].weather_state_name;
+        resultShorthand = response.consolidated_weather[0].weather_state_abbr;
       }
     }
-    appendCity(city, result, resultDate);
+    appendCity(city, resultDate, result, resultShorthand);
   };
 }
 
@@ -102,7 +114,7 @@ function sortTable(column, type) {
         //Proper way to compare text in js is using localeCompare
         //If order is ascending you can - a.localeCompare(b)
         //If order is descending you can - b.localeCompare(a);
-        return a.localeCompare(b);
+        return b.localeCompare(a);
         break;
       case 'number':
         //You can use deduct to compare if number.
