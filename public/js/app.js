@@ -51,6 +51,10 @@ function getCity(city) {
       method: 'GET',
       url: urlSend,
       dataType: 'json',
+      contentType: 'application / x-www-form-urlencoded',
+      xhrFields: {
+        withCredentials: true
+      },
       success: handleSuccess,
       error: handleError,
   }
