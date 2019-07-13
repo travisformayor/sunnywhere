@@ -5,10 +5,18 @@ main {
   margin: 0 auto;
   max-width: 1000px;
 }
-.load-status {
-  text-align: center;
-  color: gray;
-  font-weight: bold;
-  margin-top: 1em;
-  margin-bottom: -.75em;
+.ui.search {
+  margin: 20px auto;
+}
+.results.visible {
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+}
+
+.ui.centered.card {
+  margin: 20px auto 0;
+  min-height: 10em;
 }

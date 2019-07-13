@@ -23,18 +23,36 @@ app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 
 // Routes ============================= //
-// // Sanity test starter route
-// app.get('/', (req, res) => {
-//   res.send('<h1>Test</h1>')
-// });
 app.get('/', (req, res) => {
   db.City.find({})
   .catch(err => res.json({error: err}))
   .then(cities => {
-    // res.json({cities: cities})
     res.render('index', {cities});
   })
 });
+
+app.get('/search', (req, res) => {
+  let city = req.query.city;
+  // console.log(city)
+  // res.json({results: [
+  //   {
+  //     title: city
+  //   }
+  // ]})
+  // let test = "San Francisco";
+  axios.get(`https://www.metaweather.com/api/location/search/?query=${city}`)
+    .then(function (response) {
+      // handle response
+      if (response) {
+        res.json({results: response.data})
+      }
+    })
+    .catch(function (error) {
+      // handle error
+      console.log('Update Endpoint Error: ', error)
+      return res.json({error})
+    });
+})
 
 // Index of all Cities in the DB
 app.get('/cities', (req, res) => {

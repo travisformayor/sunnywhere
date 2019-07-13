@@ -11,14 +11,33 @@
 
   <script defer src="js/jquery-3.4.1.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
-  <script defer src="js/cities.js"></script>
   <script defer src="js/app.js"></script>
 
   <title>Sunny Where? - by Travis Uhrig</title>
 </head>
 <body>
   <main>
-    <p><%#= cities %></p>
+  
+    <div class="ui grid center aligned">
+      <div class="sixteen wide column">
+        <div class="ui search">
+          <div class="ui icon input">
+            <input class="prompt" type="text" placeholder="Find your city...">
+            <i class="search icon"></i>
+          </div>
+          <div class="results"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ui centered card">
+      <div class="content">
+        <div id="city-name" class="header center aligned"></div>
+        <div id="latlon" class="meta center aligned"></div>
+        <div id="distance" class="description center aligned"></div>
+      </div>
+    </div>
+
     <table class="ui celled table">
       <thead>
         <tr>
@@ -31,7 +50,7 @@
       </thead>
       <tbody id="city-list">
         <!-- js inserts city results here -->
-        <% cities.sort((a, b) => b.type.localeCompare(a.type)).forEach(city => { %>
+        <% cities.sort((a, b) => a.type.localeCompare(b.type)).forEach(city => { %>
           <% if (city.type === 'Clear') { %>
             <tr class="positive">
           <% } else { %>
@@ -51,8 +70,6 @@
             <td data-label="Weather Date"><%= city.entryDate.toDateString() %></td>
           </tr>
         <% }) %>
-
-
       </tbody>
     </table>
   </main>
