@@ -68,7 +68,9 @@ app.get('/update', (req, res) => {
   // loop through each city one at a time and update
   // delay between each to be kind to the MetaWeather api
   let index = 0;
-  loopCityUpdate(cities, index)
+  loopCityUpdate(cities, index);
+  res.send('<h2>Update Started. You can close this page.</h2>');
+
   function loopCityUpdate(cities, index) {
     // Wait on each loop before trying for the next one
     setTimeout(() => {
@@ -77,8 +79,6 @@ app.get('/update', (req, res) => {
       if (cities.length > index) {
         // still more cities, call again
         loopCityUpdate(cities, index)
-      } else {
-        res.json({status: 'update complete'})
       }
     }, 500)
   }
@@ -122,7 +122,6 @@ app.get('/update', (req, res) => {
     .catch(function (error) {
       // handle error
       console.log('Update Endpoint Error: ', error)
-      return res.json({error})
     });
   }
 })
