@@ -6,7 +6,8 @@ const CitySchema = new Schema({
   woeid: Number,
   entryDate: Date,
   type: String,
-  typeShorthand: String 
+  typeShorthand: String,
+  latlong: String,
 })
 
 const City = mongoose.model('City', CitySchema);
