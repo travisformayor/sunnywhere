@@ -5,6 +5,10 @@ main {
   margin: 0 auto;
   max-width: 1000px;
 }
+h1#top-title {
+  margin: 40px auto -10px;
+  font-size: 3em;
+}
 .ui.search {
   margin: 20px auto;
 }
@@ -15,8 +19,16 @@ main {
   left: 0;
   right: 0;
 }
-
 .ui.centered.card {
-  margin: 20px auto 0;
-  min-height: 10em;
+  margin: 20px auto;
+  min-height: 7em;
+}
+#sunny-table {
+  margin-bottom: 10px;
+}
+#sad-table {
+  margin-bottom: 75px;
+}
+footer {
+  margin: 0 auto 20px;
 }

@@ -27,7 +27,9 @@ app.get('/', (req, res) => {
   db.City.find({})
   .catch(err => res.json({error: err}))
   .then(cities => {
-    res.render('index', {cities});
+    const sunnyCities = cities.filter(city => city.type === 'Clear')
+    const sadCities = cities.filter(city => city.type != 'Clear')
+    res.render('index', {sunnyCities, sadCities});
   })
 });
 
@@ -92,6 +94,7 @@ app.get('/update', (req, res) => {
         let city = {
           name: data.title,
           woeid: data.woeid,
+          latlong: data.latt_long,
           entryDate: 'Unknown',
           type: ' Unknown',
           typeShorthand: 'Unknown',

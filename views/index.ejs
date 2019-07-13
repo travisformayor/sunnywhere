@@ -17,6 +17,9 @@
 </head>
 <body>
   <main>
+
+    <h1 class="ui header center aligned" id="top-title">Sunny Where?</h1>
+    <h4 class="ui header center aligned">Where is the closest sunny place</h1>
   
     <div class="ui grid center aligned">
       <div class="sixteen wide column">
@@ -32,13 +35,59 @@
 
     <div class="ui centered card">
       <div class="content">
-        <div id="city-name" class="header center aligned"></div>
+        <div class="ui sub header center aligned">Your City</div>
+      </div>
+      <div class="content">
+        <div id="city-name" class="ui header center aligned"></div>
         <div id="latlon" class="meta center aligned"></div>
+      </div>
+    </div>
+
+    <div class="ui centered card">
+      <div class="content">
+        <div class="ui sub header center aligned">Closest Sunny City</div>
+      </div>
+      <div class="content">
+        <div id="closest-city" class="ui header center aligned"></div>
         <div id="distance" class="description center aligned"></div>
       </div>
     </div>
 
-    <table class="ui celled table">
+    <table id="sunny-table" class="ui celled table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>City</th>
+          <th>City ID</th>
+          <th>Weather</th>
+          <th>Lat Long</th>
+          <th>Distance</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody id="sunny-city-list">
+        <% sunnyCities.forEach(city => { %>
+          <tr class="positive">
+            <td>
+              <% if (city.typeShorthand) { %>
+                <img 
+                  src="https://www.metaweather.com/static/img/weather/<%= city.typeShorthand %>.svg"
+                  class="ui mini centered image"
+                >
+              <% } %> 
+            </td>
+            <td data-label="City" class="name-cell"><%= city.name %></td>
+            <td data-label="City ID"><%= city.woeid %></td>
+            <td data-label="Weather" class="result"><%= city.type === 'Clear' ? 'Sunny' : city.type %></td>
+            <td data-label="Lat Long"><%= city.latlong %></td>
+            <td data-label="Distance" class="distance-cell" data-latlon="<%= city.latlong %>" data-miles="0"></td>
+            <td data-label="Date"><%= city.entryDate.toDateString() %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <table id="sad-table" class="ui celled table">
       <thead>
         <tr>
           <th></th>
@@ -48,14 +97,10 @@
           <th>Date</th>
         </tr>
       </thead>
-      <tbody id="city-list">
-        <!-- js inserts city results here -->
-        <% cities.sort((a, b) => a.type.localeCompare(b.type)).forEach(city => { %>
-          <% if (city.type === 'Clear') { %>
-            <tr class="positive">
-          <% } else { %>
-            <tr class="negative">
-          <% } %>
+      <tbody id="sad-city-list">
+        <!-- Sort and group by type -->
+        <% sadCities.sort((a, b) => a.type.localeCompare(b.type)).forEach(city => { %>
+          <tr class="negative">
             <td>
               <% if (city.typeShorthand) { %>
                 <img 
@@ -66,13 +111,15 @@
             </td>
             <td data-label="City"><%= city.name %></td>
             <td data-label="City ID"><%= city.woeid %></td>
-            <td data-label="Weather State" class="result"><%= city.type === 'Clear' ? 'Sunny' : city.type %></td>
-            <td data-label="Weather Date"><%= city.entryDate.toDateString() %></td>
+            <td data-label="Weather" class="result"><%= city.type === 'Clear' ? 'Sunny' : city.type %></td>
+            <td data-label="Date"><%= city.entryDate.toDateString() %></td>
           </tr>
         <% }) %>
       </tbody>
     </table>
   </main>
-  
+  <footer>
+    <h5 class="ui header center aligned">Thanks <a href="https://www.metaweather.com/api/" target="_blank">MetaWeather!</a></h5>
+  </footer>
 </body>
 </html>
