@@ -80,7 +80,7 @@ app.get('/update', (req, res) => {
       } else {
         res.json({status: 'update complete'})
       }
-    }, 1000)
+    }, 500)
   }
   function updateCity(cityId) {
     // get a single city's info
