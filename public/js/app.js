@@ -39,6 +39,7 @@ $("input.prompt").on('keyup', (e) => {
 function updateCityCard(city) {
   $('#city-name').text(city.title);
   $('#latlon').text(`Lat Lon: ${city.latt_long}`);
+  showCityResult();
   getDistances(city.latt_long);
   sortSunnyDistance(5);
   updateClosest();
@@ -48,6 +49,11 @@ function updateClosest() {
   const milesTo = $('#sunny-city-list tr:first').children('td.distance-cell')[0].innerText;
   $('#closest-city').text(cityName);
   $('#distance').text(milesTo);
+}
+
+// // Unhide the city and the result
+function showCityResult() {
+  $('#city-visibility').removeClass('hide-city');
 }
 
 // // Calculate the distance between Latitudes and Longitudes

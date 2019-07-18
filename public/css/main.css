@@ -12,6 +12,9 @@ h1#top-title {
 .ui.search {
   margin: 20px auto;
 }
+.hide-city {
+  visibility: hidden;
+}
 .results.visible {
   position: absolute;
   margin-left: auto;
