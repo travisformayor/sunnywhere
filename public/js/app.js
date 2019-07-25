@@ -53,7 +53,7 @@ function updateClosest() {
 
 // // Unhide the city and the result
 function showCityResult() {
-  $('#city-visibility').removeClass('hide-city');
+  $('#city-boxes').removeClass('hide-city').addClass('show-city');
 }
 
 // // Calculate the distance between Latitudes and Longitudes

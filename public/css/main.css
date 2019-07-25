@@ -13,7 +13,17 @@ h1#top-title {
   margin: 20px auto;
 }
 .hide-city {
+  /* Visibility makes items under it clickable, opacity allows the fade effect */
+  opacity: 0;
   visibility: hidden;
+  margin-bottom: -175px;
+}
+.show-city {
+  /* CSS animations for the result city showing up */
+  transition: margin-bottom ease 1s, opacity ease 3s;
+  opacity: 1;
+  /* Default - visibility: visible; */
+  margin-bottom: 40px;
 }
 .results.visible {
   position: absolute;
