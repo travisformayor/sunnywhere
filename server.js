@@ -35,13 +35,6 @@ app.get('/', (req, res) => {
 
 app.get('/search', (req, res) => {
   let city = req.query.city;
-  // console.log(city)
-  // res.json({results: [
-  //   {
-  //     title: city
-  //   }
-  // ]})
-  // let test = "San Francisco";
   axios.get(`https://www.metaweather.com/api/location/search/?query=${city}`)
     .then(function (response) {
       // handle response
@@ -80,7 +73,7 @@ app.get('/update', (req, res) => {
         // still more cities, call again
         loopCityUpdate(cities, index)
       }
-    }, 500)
+    }, 5000) // wait 5 seconds between each city api call. Heroku idles after 30 mins and this only takes about 8 minutes to finish`
   }
   function updateCity(cityId) {
     // get a single city's info
