@@ -25,6 +25,13 @@ h1#top-title {
   /* Default - visibility: visible; */
   margin-bottom: 40px;
 }
+#sunny-city-list {
+  opacity: 1;
+  transition: opacity ease 0.25s;
+}
+.hide-text {
+  opacity: 0 !important;
+}
 .results.visible {
   position: absolute;
   margin-left: auto;

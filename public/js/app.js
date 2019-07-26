@@ -5,10 +5,10 @@ console.log('Feel free to fork or send me a PR request \\o/');
 console.log(' - Travis');
 console.log('####################');
 
-// Put focus on the search box
+// // Put focus on the search box
 $('input.prompt').focus().select()
 
-// Search for matching cities
+// // Autocomplete: Search api for matching cities
 $('.ui.search').search({
   apiSettings: {
     action: 'search', 
@@ -18,14 +18,14 @@ $('.ui.search').search({
   minCharacters: 3,
 })
 
-// On search grab the selected city
+// // On search grab the selected city
 $("input.prompt").on('keyup', (e) => {
   // is the search box no longer empty?
   if (!$('.ui.search').search('is empty')) {
     // No longer empty, get the searched city
     let city = $('.ui.search').search('get result');
     updateCityCard(city);
-    // Start checking for updates and new searchs
+    // Start checking for updates and new searches
     setInterval(() => {
       // watch for a new city
       // get the cities info and update the card and distances
@@ -36,6 +36,7 @@ $("input.prompt").on('keyup', (e) => {
     },500)
   }
 });
+// Update the page after a search
 function updateCityCard(city) {
   $('#city-name').text(city.title);
   $('#latlon').text(`Lat Lon: ${city.latt_long}`);
@@ -44,25 +45,38 @@ function updateCityCard(city) {
   sortSunnyDistance(5);
   updateClosest();
 }
+//Set the city result box to the closest city
 function updateClosest() {
   const cityName = $('#sunny-city-list tr:first').children('td.name-cell')[0].innerText;
   const milesTo = $('#sunny-city-list tr:first').children('td.distance-cell')[0].innerText;
-  $('#closest-city').text(cityName);
-  $('#distance').text(milesTo);
+  if ($('#closest-city').text() != cityName) {
+    // New closest city
+    $('#closest-city').text(cityName);
+    $('#distance').text(milesTo);
+    toggleText();
+  }
 }
-
-// // Unhide the city and the result
+// Flicker the text to show that a distance reorder has happened
+function toggleText() {
+  $('#sunny-city-list').addClass('hide-text');
+  setTimeout(() => {
+    $('#sunny-city-list').removeClass('hide-text')
+  }, 250)
+}
+// Show the city and the result boxes
 function showCityResult() {
   $('#city-boxes').removeClass('hide-city').addClass('show-city');
 }
 
 // // Calculate the distance between Latitudes and Longitudes
-function parseLatLon(latlonStr) {
-  const latlon = latlonStr.split(',');
-  let cords = [];
-  cords[0] = parseFloat(latlon[0].trim());
-  cords[1] = parseFloat(latlon[1].trim());
-  return cords;
+function parseLatLon(latlongStr) {
+  if (latlongStr) {
+    const latlong = latlongStr.split(',');
+    let cords = [];
+    cords[0] = parseFloat(latlong[0].trim());
+    cords[1] = parseFloat(latlong[1].trim());
+    return cords;
+  }
 }
 function getDistances(startPoint) {
   // parse the city lat lon as a number
@@ -72,8 +86,8 @@ function getDistances(startPoint) {
     // loop each distance cell and add the distance
     $('.distance-cell').each(function() {
       // get the lat lon and parse it to numbers
-      const cityLatLonStr = $(this).attr('data-latlon')
-      const cityCords = parseLatLon(cityLatLonStr);
+      const cityLatLongStr = $(this).attr('data-latlon')
+      const cityCords = parseLatLon(cityLatLongStr);
   
       const miles = getDistanceLatLonInMiles(startCords[0], startCords[1], cityCords[0], cityCords[1])
       $(this).text(`${miles} miles`)
