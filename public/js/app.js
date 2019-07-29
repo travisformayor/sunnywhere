@@ -52,8 +52,11 @@ function updateClosest() {
   if ($('#closest-city').text() != cityName) {
     // New closest city
     $('#closest-city').text(cityName);
-    $('#distance').text(milesTo);
     toggleText();
+  }
+  if (milesTo) {
+    // Update distance if defined
+    $('#distance').text(milesTo);
   }
 }
 // Flicker the text to show that a distance reorder has happened
