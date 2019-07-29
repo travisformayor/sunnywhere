@@ -20,6 +20,7 @@ h1#top-title {
 }
 .show-city {
   /* CSS animations for the result city showing up */
+  -webkit-transition: margin-bottom ease 1s, opacity ease 3s;
   transition: margin-bottom ease 1s, opacity ease 3s;
   opacity: 1;
   /* Default - visibility: visible; */
@@ -27,6 +28,7 @@ h1#top-title {
 }
 #sunny-city-list {
   opacity: 1;
+  -webkit-transition: opacity ease 0.25s;
   transition: opacity ease 0.25s;
 }
 .hide-text {
